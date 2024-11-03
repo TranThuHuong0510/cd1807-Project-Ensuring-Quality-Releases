@@ -55,7 +55,7 @@
       </HTTPSamplerProxy>
       <hashTree/>
       <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV User Data Set Config">
-        <stringProp name="filename">./id.csv</stringProp>
+        <stringProp name="filename">E:/DevOps/DevopsP3/automatedtesting/jmeter/test-suite/id.csv</stringProp>
         <stringProp name="fileEncoding"></stringProp>
         <stringProp name="variableNames">csvvar</stringProp>
         <boolProp name="ignoreFirstLine">false</boolProp>
