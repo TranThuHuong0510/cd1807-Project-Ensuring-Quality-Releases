@@ -1,6 +1,6 @@
 name: Azure Pipelines
 trigger:
-- main
+- master
 
 # ToDo: Replace the agent pool name, if you are using Udacity Cloud lab. 
 # Otherwise, comment out the line below. 
@@ -8,6 +8,10 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
+  ARM_CLIENT_ID: $(client_id)          #  client_id from Library
+  ARM_CLIENT_SECRET: $(client_secret)    #  client_secret from Library
+  ARM_TENANT_ID: $(tenant_id)            #  tenant_id from Library
+  ARM_SUBSCRIPTION_ID: $(subscription_id) #  subscription_id from Library
   python.version: '3.7.6'
   # ToDo: Replace the service connection name as used in the DevOps project settings
   azureServiceConnectionId: 'huongServiceConnection'
