@@ -1,11 +1,11 @@
-# https://aka.ms/yaml
+name: Azure Pipelines
 trigger:
 - main
 
 # ToDo: Replace the agent pool name, if you are using Udacity Cloud lab. 
 # Otherwise, comment out the line below. 
 pool: 
-  vmImage: Hosted Ubuntu 1604
+  vmImage: 'ubuntu-latest'
 
 variables:
   python.version: '3.7.6'
