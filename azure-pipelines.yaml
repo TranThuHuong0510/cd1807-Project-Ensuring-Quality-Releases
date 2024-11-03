@@ -113,14 +113,12 @@ stages:
         script: 'newman run Regression_Tests.postman_collection.json -e huong-p3-evn.postman_environment.json --reporters cli,junit --reporter-junit-export TEST-Regression.xml'
         workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
     # Postman - Publish Results 
-    # ToDo: Complete the task as explained here: https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/test/publish-test-results?view=azure-devops&tabs=trx%2Cyaml#yaml-snippet
     - task: PublishTestResults@2
       inputs:
-        testResultsFormat: 'JUnit'
-        testResultsFiles: '**/TEST-*.xml'
-        searchFolder:       # ToDo
+        testResultsFiles: "**/*report.xml"
+        searchFolder: "$(System.DefaultWorkingDirectory)/automatedtesting/postman"
         mergeTestResults: true
-        testRunTitle:       # ToDo
+        testRunTitle: "Run Test Report"
 
     #--------------------------------------------#
     # Selenium (UI) Test Suite - Archive the package  
