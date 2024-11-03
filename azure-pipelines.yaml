@@ -114,6 +114,7 @@ stages:
         workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
     # Postman - Publish Results 
     - task: PublishTestResults@2
+      displayName: Publish Postman Results 
       inputs:
         testResultsFiles: "**/*report.xml"
         searchFolder: "$(System.DefaultWorkingDirectory)/automatedtesting/postman"
