@@ -12,7 +12,7 @@ resource "azurerm_network_interface" "test" {
 }
 
 resource "azurerm_linux_virtual_machine" "huongttt13-vm" {
-  name                = "selenium-huong-vm"
+  name                = "huong-vm"
   location            = var.location
   resource_group_name = var.resource_group
   size                = "Standard_B1s"
