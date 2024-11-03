@@ -216,36 +216,30 @@ stages:
       runOnce:
         deploy:
           steps:
-          - download: current
-            artifact: drop-ui-tests     
-            
-          - task: Bash@3
-            inputs:
-              targetType: 'inline'
-              script: |           
-                #! /bin/bash
-                
-                sudo apt-get upgrade -y
-                sudo apt-get install python3-pip -y
-                sudo apt-get install unzip -y
-                sudo apt-get install -y chromium-browser
-                pip3 install selenium
-                cd ~/
-                DIR=/home/testuser/app
-                if [ ! -d "$DIR" ]; then
-                    mkdir app
-                fi
-                mv /home/testuser/azagent/_work/1/drop-uitests/$(Build.BuildId)-uitests.zip app
-                cd app
+            - download: current
+              artifact: drop-uitests
+            - task: NodeTool@0
+              displayName: Install NodeJS 16
+              inputs:
+                versionSpec: "16.x"
+            - task: Bash@3
+              displayName: Install required packages for Selenium running
+              inputs:
+                targetType: "inline"
+                script: |
+                  #! /bin/bash
+                  sudo apt-get update -y
+                  sudo apt-get install python3-pip -y
+                  sudo apt-get install unzip -y
+                  pip3 install webdriver_manager
+            - bash: |
                 unzip -o $(Build.BuildId)-uitests.zip
-                FILE=/home/testuser/app/chromedriver_linux64.zip
-                if [ ! -f "$FILE" ]; then
-                    LATEST=$(wget -q -O - http://chromedriver.storage.googleapis.com/LATEST_RELEASE)
-                    wget http://chromedriver.storage.googleapis.com/$LATEST/chromedriver_linux64.zip
-                    unzip -o chromedriver_linux64.zip
-                    sudo ln -s $PWD/chromedriver /usr/local/bin/chromedriver
-                fi
-                export PATH=$PATH:/home/testuser/app
-                echo "Starting Selenium Tests"
-                python3 add_remove_from_cart.py >> selenium.log
-                echo "Completed Selenium Tests. Check selenium.log for results."
+                pip3 install -r requirements.txt
+                google-chrome --version
+                chromedriver --version
+                sudo mv chromedriver /usr/bin/chromedriver
+                sudo chown root:root /usr/bin/chromedriver
+                sudo chmod +x /usr/bin/chromedriver
+                python3 add_remove_from_cart.py | tee -a selenium.log
+              displayName: "Run Selenium Tests"
+              workingDirectory: $(Pipeline.Workspace)/drop-uitests
