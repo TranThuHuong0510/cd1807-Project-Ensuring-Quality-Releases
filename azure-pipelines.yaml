@@ -51,10 +51,21 @@ stages:
       inputs:
         command: 'validate'
         allowTelemetryCollection: true
+
+    - task: TerraformCLI@0
+      displayName: Terraform plan
+      inputs:
+        provider: "azurerm"
+        command: "plan"
+        environmentServiceNameAzureRM: "$(azureServiceConnectionId)"
+        publishPlanResults: "huong-plan"
+        commandOptions: "-out=$(System.DefaultWorkingDirectory)/terraform.tfplan -detailed-exitcode"
+        workingDirectory: "$(System.DefaultWorkingDirectory)/terraform/environments/test"
     
     # Run Terraform Apply
     - task: TerraformCLI@2
       displayName: Terraform apply
+      condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
       inputs:
         provider: 'azurerm'
         command: 'apply'
@@ -73,76 +84,90 @@ stages:
     #     environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
 
 #--------------------------------------------#    
-    # Postman - Install Newman    
-    # ToDo: Update the command and verify the working directory
-    - task: CmdLine@2
-      displayName: Install Newman
-      inputs:
-        script: 'sudo npm install -g newman'
-        workingDirectory: $(System.DefaultWorkingDirectory)
-    # Postman Data Validation Test Suite    
-    # ToDo: Verify the working directory
-    - task: CmdLine@2
-      displayName: Run Data Validation Tests
-      continueOnError: true
-      inputs:
-        script: 'newman run RunDataValidationTests.postman_collection.json -e huong-p3-evn.postman_environment.json --reporters cli,junit --reporter-junit-export TEST-DataValidation.xml'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
-    # Postman Regression Test Suite    
-    - task: CmdLine@2
-      displayName: Run Regression Tests
-      continueOnError: true
-      inputs:
-        script: 'newman run Regression_Tests.postman_collection.json -e huong-p3-evn.postman_environment.json --reporters cli,junit --reporter-junit-export TEST-Regression.xml'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
-    # Postman - Publish Results 
-    - task: PublishTestResults@2
-      displayName: Publish Postman Results 
-      inputs:
-        testResultsFiles: "**/*report.xml"
-        searchFolder: "$(System.DefaultWorkingDirectory)/automatedtesting/postman"
-        mergeTestResults: true
-        testRunTitle: "Run Test Report"
+  - job: Testing
+    dependsOn: BuildInfrastructure
+    condition: succeeded()
+    steps:
+      - task: NodeTool@0
+        displayName: Install NodeJS
+        inputs:
+          versionSpec: "16.x"
+      - task: CmdLine@2
+        displayName: Install NPM
+        inputs:
+          script: "sudo apt install npm -y"
+          workingDirectory: "$(System.DefaultWorkingDirectory)"
+      # Postman - Install Newman    
+      - task: CmdLine@2
+        displayName: Install Newman
+        inputs:
+          script: 'sudo npm install -g newman'
+          workingDirectory: $(System.DefaultWorkingDirectory)
+      # Postman Data Validation Test Suite    
+      - task: CmdLine@2
+        displayName: Run Data Validation Tests
+        continueOnError: true
+        inputs:
+          script: 'newman run RunDataValidationTests.postman_collection.json -e huong-p3-evn.postman_environment.json --reporters cli,junit --reporter-junit-export TEST-DataValidation.xml'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
+      # Postman Regression Test Suite    
+      - task: CmdLine@2
+        displayName: Run Regression Tests
+        continueOnError: true
+        inputs:
+          script: 'newman run Regression_Tests.postman_collection.json -e huong-p3-evn.postman_environment.json --reporters cli,junit --reporter-junit-export TEST-Regression.xml'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
+      # Postman - Publish Results 
+      - task: PublishTestResults@2
+        displayName: Publish Postman Results 
+        inputs:
+          testResultsFiles: "**/*report.xml"
+          searchFolder: "$(System.DefaultWorkingDirectory)/automatedtesting/postman"
+          mergeTestResults: true
+          testRunTitle: "Run Test Report"
+      #install pakage
+      - task: CmdLine@2
+        displayName: Install required packages
+        inputs:
+          script: "sudo apt install -y zip"
+      # Selenium (UI) Test Suite - Archive the package  
+      - task: ArchiveFiles@2
+        displayName: 'Archive UI Tests'
+        inputs:
+          rootFolderOrFile: '$(System.DefaultWorkingDirectory)/automatedtesting/selenium'
+          includeRootFolder: false
+          archiveType: 'zip'
+          archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-uitests.zip'
+      # Selenium Test Suite - Publish the package  
+      - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-uitests.zip   # Same as the archiveFile artifact above. 
+        displayName: 'Upload Package'
+        artifact: drop-uitests
 
-    #--------------------------------------------#
-    # Selenium (UI) Test Suite - Archive the package  
-    - task: ArchiveFiles@2
-      displayName: 'Archive UI Tests'
-      inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/automatedtesting/selenium'
-        includeRootFolder: false
-        archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-uitests.zip'
-    # Selenium Test Suite - Publish the package  
-    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-uitests.zip   # Same as the archiveFile artifact above. 
-      displayName: 'Upload Package'
-      artifact: drop-uitests
+      #--------------------------------------------#    
+      # FakeRestAPI - Archive
+      - task: ArchiveFiles@2
+        displayName: "Archive FakeRestAPI"
+        inputs:
+          rootFolderOrFile: "$(System.DefaultWorkingDirectory)/automatedtesting/jmeter/fakerestapi"
+          includeRootFolder: false
+          archiveType: "zip"
+          archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip"
+      - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip
+        displayName: "Upload Package"
+        artifact: drop-fakerestapi
 
-    #--------------------------------------------#    
-    # FakeRestAPI - Archive
-    - task: ArchiveFiles@2
-      displayName: "Archive FakeRestAPI"
-      inputs:
-        rootFolderOrFile: "$(System.DefaultWorkingDirectory)/automatedtesting/jmeter/fakerestapi"
-        includeRootFolder: false
-        archiveType: "zip"
-        archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip"
-    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip
-      displayName: "Upload Package"
-      artifact: drop-fakerestapi
-
-    #--------------------------------------------#  
-    # JMeter (Performance) Test Suite - Archive
-    - task: ArchiveFiles@2
-      displayName: "Archive PerformanceTestSuite"
-      inputs:
-        rootFolderOrFile: "$(System.DefaultWorkingDirectory)/automatedtesting/jmeter/test-suite"
-        includeRootFolder: false
-        archiveType: "zip"
-        archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip"
-    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip
-      displayName: "Upload Package"
-      artifact: drop-perftests
+      #--------------------------------------------#  
+      # JMeter (Performance) Test Suite - Archive
+      - task: ArchiveFiles@2
+        displayName: "Archive PerformanceTestSuite"
+        inputs:
+          rootFolderOrFile: "$(System.DefaultWorkingDirectory)/automatedtesting/jmeter/test-suite"
+          includeRootFolder: false
+          archiveType: "zip"
+          archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip"
+      - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip
+        displayName: "Upload Package"
+        artifact: drop-perftests
 
 #--------------------------------------------#  
 # DEPLOYMENT STAGE
@@ -181,7 +206,6 @@ stages:
               
   #--------------------------------------------#  
   # Selenium | Functional UI Tests
-  # ToDo: 
   - deployment: VMDeploy
     displayName: Selenium Tests
     environment:
