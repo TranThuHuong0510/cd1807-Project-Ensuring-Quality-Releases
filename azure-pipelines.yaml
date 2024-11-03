@@ -1,9 +1,7 @@
 name: Azure Pipelines
 trigger:
 - master
-
-# ToDo: Replace the agent pool name, if you are using Udacity Cloud lab. 
-# Otherwise, comment out the line below. 
+ 
 pool: 
   vmImage: 'ubuntu-latest'
 
@@ -16,6 +14,7 @@ variables:
   azureServiceConnectionId: 'huongServiceConnection'
   projectRoot: $(System.DefaultWorkingDirectory)
   environmentName: 'test'
+  webAppName: huongttt13-app-AppService
 
 stages:
 #--------------------------------------------#  
@@ -34,7 +33,6 @@ stages:
         terraformVersion: 'latest'
     
     # Run Terraform Init on the pipeline agent 
-    # ToDo: Replace the resource group name, storage account name, and container name below
     - task: TerraformCLI@2
       displayName: 'Terrafom init'
       inputs:
