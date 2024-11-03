@@ -1,7 +1,3 @@
-name: Azure Pipelines
-
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 trigger:
 - main
@@ -14,7 +10,7 @@ pool:
 variables:
   python.version: '3.7.6'
   # ToDo: Replace the service connection name as used in the DevOps project settings
-  azureServiceConnectionId: 'myServiceConnection'
+  azureServiceConnectionId: 'huongServiceConnection'
   # Project root folder. Point to the folder containing manage.py file.
   projectRoot: $(System.DefaultWorkingDirectory)
   # Environment name
@@ -31,18 +27,19 @@ stages:
     #--------------------------------------------#  
     # Use Terraform to create the Infrastructure      
     # Install Terraform on the pipeline agent 
-    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
+    - task: TerraformInstaller@2
       displayName: 'Terrafom installation'
       inputs:
-        terraformVersion: '1.2.9'
+        terraformVersion: 'latest'
     
     # Run Terraform Init on the pipeline agent 
     # ToDo: Replace the resource group name, storage account name, and container name below
-    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV3@3
+    - task: TerraformCLI@2
       displayName: 'Terrafom init'
       inputs:
         provider: 'azurerm'
         command: 'init'
+        allowTelemetryCollection: true
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
         backendServiceArm: '$(azureServiceConnectionId)'
         backendAzureRmResourceGroupName: ''
@@ -50,11 +47,11 @@ stages:
         backendAzureRmContainerName: ''
         backendAzureRmKey: 'test.terraform.tfstate'
 
-    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV3@3
+    - task: TerraformCLI@2
       displayName: Terraform validate
       inputs:
-        provider: 'azurerm'
         command: 'validate'
+        allowTelemetryCollection: true
 
     # OPTIONAL - This step is needed only if your Terraform VM uses an SSH key pair for login and you want your pipeline agent to connect to it. 
     # Generate an SSH key pair in your local/AZ Cloud shell. Use the public key in the Terraform VM module. 
@@ -74,11 +71,12 @@ stages:
 
     
     # Run Terraform Apply
-    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV3@3
+    - task: TerraformCLI@2
       displayName: Terraform apply
       inputs:
         provider: 'azurerm'
         command: 'apply'
+        allowTelemetryCollection: true
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
         environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
 
@@ -181,7 +179,7 @@ stages:
   - deployment: FakeRestAPI
     pool:
       vmImage: 'Ubuntu-18.04'      
-    environment: <environment name>   # ToDo
+    environment: $(environmentName)
     strategy:
       runOnce:
         deploy:
@@ -211,7 +209,7 @@ stages:
   - deployment: VMDeploy
     displayName: Selenium Tests
     environment:
-      name:         # ToDo: Change/provide a name
+      name:    $(environmentName)
       resourceType: VirtualMachine
       tags: selenium
     strategy:
