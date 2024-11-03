@@ -13,7 +13,7 @@ variables:
   python.version: '3.7.6'
   azureServiceConnectionId: 'huongServiceConnection'
   projectRoot: $(System.DefaultWorkingDirectory)
-  environmentName: 'test'
+  environmentName: 'test-vm-huong'
   webAppName: huongttt13-app-AppService
 
 stages:
