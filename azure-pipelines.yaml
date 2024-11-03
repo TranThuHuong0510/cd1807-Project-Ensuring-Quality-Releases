@@ -13,11 +13,8 @@ variables:
   ARM_TENANT_ID: $(tenant_id)            #  tenant_id from Library
   ARM_SUBSCRIPTION_ID: $(subscription_id) #  subscription_id from Library
   python.version: '3.7.6'
-  # ToDo: Replace the service connection name as used in the DevOps project settings
   azureServiceConnectionId: 'huongServiceConnection'
-  # Project root folder. Point to the folder containing manage.py file.
   projectRoot: $(System.DefaultWorkingDirectory)
-  # Environment name
   environmentName: 'test'
 
 stages:
@@ -179,10 +176,9 @@ stages:
   jobs:
   #--------------------------------------------#  
   # Deploy FakeRestAPI Web App
-  # ToDo: Provide <environment name> you created in your DevOps project
   - deployment: FakeRestAPI
     pool:
-      vmImage: 'Ubuntu-18.04'      
+      vmImage: 'ubuntu-latest'      
     environment: $(environmentName)
     strategy:
       runOnce:
@@ -191,21 +187,21 @@ stages:
           - task: AzureWebApp@1
             displayName: 'Deploy Azure Web App'
             inputs:
-              azureSubscription: ''     # ToDo
-              appName: ''               # ToDo
+              azureSubscription: "$(azureServiceConnectionId)"
+              appName: "$(webAppName)"
               appType: webApp
-              package: $(Pipeline.Workspace)/<artifact>/<archiveFile>       # ToDo: Use the published zip artifact. 
+              package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
           #--------------------------------------------#    
           # Run JMeter test suite against the App Service
           - task: CmdLine@2
             inputs:
               script: |
-                wget "https://apache.mirrors.lucidnetworks.net//jmeter/binaries/apache-jmeter-5.2.1.tgz"
-                tar -xf apache-jmeter-5.2.1.tgz
-                unzip -o $(Build.BuildId)-perftests.zip
-                ./apache-jmeter-5.2.1/bin/jmeter -n -t PerformanceTestSuite.jmx -j jmeter.log -f
-                cat jmeter.log                                                                           # ToDo: Write your commands
-              workingDirectory: $(Pipeline.Workspace)/<artifact>            # ToDo: Use the artifact name from the task above
+                      wget "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.6.3.tgz"
+                      tar -xvzf apache-jmeter-5.6.3.tgz
+                      unzip -o $(Build.BuildId)-perftests.zip
+                      ./apache-jmeter-5.6.3/bin/jmeter -n -t StressTestSuite.jmx --logfile stress-test.log
+                      ./apache-jmeter-5.6.3/bin/jmeter -n -t EnduranceTestSuite.jmx --logfile endurance-test.log
+              workingDirectory: $(Pipeline.Workspace)/drop-perftests
               
   #--------------------------------------------#  
   # Selenium | Functional UI Tests
@@ -221,7 +217,7 @@ stages:
         deploy:
           steps:
           - download: current
-            artifact: drop-ui-tests     # ToDo: Change/provide a name
+            artifact: drop-ui-tests     
             
           - task: Bash@3
             inputs:
