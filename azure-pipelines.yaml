@@ -158,12 +158,12 @@ stages:
     - task: ArchiveFiles@2
       displayName: 'Archive PerformanceTestSuite'
       inputs:
-        rootFolderOrFile: 
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/automatedtesting/jmeter/fakerestapi'
         includeRootFolder: false
         archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip'
     # JMeter Test Suite - Publish    
-    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip
+    - publish:  $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip
       displayName: 'Upload Package'
       artifact: drop-perftests
 
@@ -192,6 +192,7 @@ stages:
           #--------------------------------------------#    
           # Run JMeter test suite against the App Service
           - task: CmdLine@2
+            displayName:  'JMeter Test'
             inputs:
               script: |
                       wget "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.6.3.tgz"
