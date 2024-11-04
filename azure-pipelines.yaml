@@ -244,7 +244,7 @@ stages:
                 # else
                 LATEST=$(chromium-browser --product-version)
                 wget http://chromedriver.storage.googleapis.com/$LATEST/chromedriver_linux64.zip
-                fi
+                # fi
                 
                 # install chrome driver
                 unzip chromedriver_linux64.zip
