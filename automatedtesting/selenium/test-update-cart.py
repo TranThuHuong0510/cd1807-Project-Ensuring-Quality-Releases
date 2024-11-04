@@ -50,7 +50,7 @@ def add_items_to_cart(driver, total_items):
         wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button.btn_inventory')))
         add_to_cart_button.click()
 
-        logging.info ('add_items_to_cart: ' + product_name)
+        logging.info ('add items to cart: ' + product_name)
     cart_badge = driver.find_element(By.CLASS_NAME, "shopping_cart_badge").text
     total_items = int(cart_badge)
     logging.info('total_items_in_cart: %d', total_items)
@@ -59,13 +59,16 @@ def add_items_to_cart(driver, total_items):
 
 def remove_all_items(driver):
     wait = WebDriverWait(driver, 0) 
+    
     cart_link = driver.find_element(By.CSS_SELECTOR, "a[class='shopping_cart_link']")
     wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a[class='shopping_cart_link']")))
     cart_link.click()
     
     items = driver.find_elements(By.CLASS_NAME, "cart_item")
     for item in items:
+        product_name = item.find_element(By.CLASS_NAME, "inventory_item_name").text
         item.find_element(By.CLASS_NAME, "cart_button").click()
+        logging.info ('remove items from cart: ' + product_name)
     
     items_after_removal = driver.find_elements(By.CLASS_NAME, "cart_item")
     all_items_removed = len(items_after_removal) == 0
