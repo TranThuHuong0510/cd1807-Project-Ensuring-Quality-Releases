@@ -1,0 +1,21 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1730737449215,136,Get Activities,200,OK,stress-test 1-1,text,true,,352,166,2,2,https://huongttt13-app-appservice.azurewebsites.net/api/Activities?id=1,136,0,97
+1730737449351,46,Get Authors,200,OK,stress-test 1-1,text,true,,330,163,2,2,https://huongttt13-app-appservice.azurewebsites.net/api/Authors?id=1,46,0,0
+1730737449312,142,Get Activities,200,OK,stress-test 1-2,text,true,,351,166,2,2,https://huongttt13-app-appservice.azurewebsites.net/api/Activities?id=2,142,0,81
+1730737449455,24,Get Authors,200,OK,stress-test 1-2,text,true,,330,163,2,2,https://huongttt13-app-appservice.azurewebsites.net/api/Authors?id=2,24,0,0
+1730737449413,102,Get Activities,200,OK,stress-test 1-3,text,true,,352,166,2,2,https://huongttt13-app-appservice.azurewebsites.net/api/Activities?id=3,102,0,70
+1730737449515,23,Get Authors,200,OK,stress-test 1-3,text,true,,330,163,2,2,https://huongttt13-app-appservice.azurewebsites.net/api/Authors?id=3,23,0,0
+1730737449514,80,Get Activities,200,OK,stress-test 1-4,text,true,,351,166,1,1,https://huongttt13-app-appservice.azurewebsites.net/api/Activities?id=4,80,0,48
+1730737449594,22,Get Authors,200,OK,stress-test 1-4,text,true,,330,163,2,2,https://huongttt13-app-appservice.azurewebsites.net/api/Authors?id=4,22,0,0
+1730737449612,80,Get Activities,200,OK,stress-test 1-5,text,true,,352,166,1,1,https://huongttt13-app-appservice.azurewebsites.net/api/Activities?id=5,80,0,46
+1730737449692,20,Get Authors,200,OK,stress-test 1-5,text,true,,330,163,1,1,https://huongttt13-app-appservice.azurewebsites.net/api/Authors?id=5,20,0,0
+1730737449714,72,Get Activities,200,OK,stress-test 1-6,text,true,,351,166,1,1,https://huongttt13-app-appservice.azurewebsites.net/api/Activities?id=6,72,0,42
+1730737449786,31,Get Authors,200,OK,stress-test 1-6,text,true,,330,163,2,2,https://huongttt13-app-appservice.azurewebsites.net/api/Authors?id=6,30,0,0
+1730737449813,76,Get Activities,200,OK,stress-test 1-7,text,true,,352,166,1,1,https://huongttt13-app-appservice.azurewebsites.net/api/Activities?id=7,76,0,44
+1730737449889,20,Get Authors,200,OK,stress-test 1-7,text,true,,330,163,1,1,https://huongttt13-app-appservice.azurewebsites.net/api/Authors?id=7,20,0,0
+1730737449914,86,Get Activities,200,OK,stress-test 1-8,text,true,,351,166,1,1,https://huongttt13-app-appservice.azurewebsites.net/api/Activities?id=8,86,0,50
+1730737450000,30,Get Authors,200,OK,stress-test 1-8,text,true,,330,163,2,2,https://huongttt13-app-appservice.azurewebsites.net/api/Authors?id=8,30,0,0
+1730737450012,74,Get Activities,200,OK,stress-test 1-9,text,true,,352,166,1,1,https://huongttt13-app-appservice.azurewebsites.net/api/Activities?id=9,74,0,44
+1730737450086,30,Get Authors,200,OK,stress-test 1-9,text,true,,330,163,2,2,https://huongttt13-app-appservice.azurewebsites.net/api/Authors?id=9,30,0,0
+1730737450112,78,Get Activities,200,OK,stress-test 1-10,text,true,,353,167,1,1,https://huongttt13-app-appservice.azurewebsites.net/api/Activities?id=10,78,0,47
+1730737450190,25,Get Authors,200,OK,stress-test 1-10,text,true,,333,164,1,1,https://huongttt13-app-appservice.azurewebsites.net/api/Authors?id=10,25,0,0
