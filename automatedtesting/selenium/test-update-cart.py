@@ -1,11 +1,10 @@
 # #!/usr/bin/env python
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
-from datetime import datetime
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
-import time
 import logging
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 logging.basicConfig(
     format='%(asctime)s %(message)s',
@@ -40,28 +39,44 @@ def login (user, password):
 
 def add_items_to_cart(driver, total_items):
     logging.info('add_items_to_cart')
-    n_items = 0
-    items = driver.find_elements(By.CLASS_NAME, 'inventory_item')[:total_items]
-    for item in items:
-        product_name = item.find_element(By.CLASS_NAME, "inventory_item_name").text
-        item.find_element(By.CLASS_NAME, "btn_inventory").click()
+    wait = WebDriverWait(driver, 0) 
 
-        n_items += 1
+    items = driver.find_elements(By.CLASS_NAME, 'inventory_item')[:total_items]
+
+    for item in items:
+        product_name = item.find_element(By.CLASS_NAME, 'inventory_item_name').text
+        item.find_element(By.CSS_SELECTOR, "button.btn_inventory")
+        add_to_cart_button = item.find_element(By.CSS_SELECTOR, 'button.btn_inventory') 
+        wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button.btn_inventory')))
+        add_to_cart_button.click()
+
         logging.info ('add_items_to_cart: ' + product_name)
-    assert n_items == total_items, f"Added {n_items} items."
-    return n_items == total_items
+    cart_badge = driver.find_element(By.CLASS_NAME, "shopping_cart_badge").text
+    total_items = int(cart_badge)
+    logging.info('total_items_in_cart: %d', total_items)
+    assert total_items == total_items, f'Expected to add {total_items} items, but added {total_items}.'
+    return total_items == total_items
 
 def remove_all_items(driver):
-  items = driver.find_elements(By.CLASS_NAME, "cart_item")
-  logging.info('total_items_in_cart: %d', len(items))
-  for item in items:
-    item.find_element(By.CLASS_NAME, "cart_button").click()
-  items = driver.find_elements(By.CLASS_NAME, "cart_item")
-  logging.info ('Remove all items completed!')
-  return len(items) == 0
+    wait = WebDriverWait(driver, 0) 
+    cart_link = driver.find_element(By.CSS_SELECTOR, "a[class='shopping_cart_link']")
+    wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a[class='shopping_cart_link']")))
+    cart_link.click()
+    
+    items = driver.find_elements(By.CLASS_NAME, "cart_item")
+    for item in items:
+        item.find_element(By.CLASS_NAME, "cart_button").click()
+    
+    items_after_removal = driver.find_elements(By.CLASS_NAME, "cart_item")
+    all_items_removed = len(items_after_removal) == 0
+    
+    assert all_items_removed, "Not all items were removed from the cart"
+    logging.info('All items removed from cart: %s', all_items_removed)
+    
+    return all_items_removed
 
 if __name__ == "__main__":
-    total_items = 3
+    total_items = 5
     driver = login('standard_user', 'secret_sauce')
     add_items_to_cart(driver, total_items)
     remove_all_items(driver)
