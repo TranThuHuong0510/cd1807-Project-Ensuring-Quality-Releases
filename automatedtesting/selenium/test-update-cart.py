@@ -33,7 +33,7 @@ def login (user, password):
 
     if driver.current_url == 'https://www.saucedemo.com/inventory.html':
         logging.info('Successfully logged in with user: ' + user)
-        return True
+        return driver
     else:
         logging.info('Failed to logged in')
         return False
@@ -59,8 +59,7 @@ def add_items_to_cart(driver, total_items):
         driver.find_element(By.ID, "back-to-products").click()
     return n_items > 0
 
-def remove_all_items():
-  driver.get("https://www.saucedemo.com/cart.html")
+def remove_all_items(driver):
   items = driver.find_elements(By.CLASS_NAME, "cart_item")
   for item in items:
     item.find_element(By.CLASS_NAME, "cart_button").click()
@@ -72,5 +71,5 @@ if __name__ == "__main__":
     total_items = 3
     driver = login('standard_user', 'secret_sauce')
     add_items_to_cart(driver, total_items)
-    remove_all_items()
+    remove_all_items(driver)
     driver.quit()
