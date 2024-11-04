@@ -238,12 +238,21 @@ stages:
                 pip3 install selenium
 
                 # download chrome driver v100
-                FILE=chromedriver_linux64.zip
+                # Remove any existing chromedriver
+                if [ -f "/usr/local/bin/chromedriver" ]; then
+                    echo "Removing existing chromedriver..."
+                    sudo rm /usr/local/bin/chromedriver
+                fi
+
+                # Fetch the version of the installed Chromium browser
+                LATEST=$(chromium-browser --product-version | cut -d'.' -f1) 
+
+                # FILE=chromedriver_linux64.zip
                 # if [ -f "$FILE" ]; then
                 #   echo "$FILE exists."
                 # else
-                LATEST=$(chromium-browser --product-version)
-                echo $LATEST
+                # LATEST=$(chromium-browser --product-version)
+                echo "chromium-browser for Chromium version: $LATEST"
                 wget http://chromedriver.storage.googleapis.com/112.0.5615.49/chromedriver_linux64.zip
                 # fi
                 
