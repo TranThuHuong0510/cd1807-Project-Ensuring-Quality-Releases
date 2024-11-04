@@ -238,26 +238,16 @@ stages:
 
                 # download chrome driver v100
                 # Remove any existing chromedriver
-                if [ -f "/usr/local/bin/chromedriver" ]; then
-                    echo "Removing existing chromedriver..."
-                    sudo rm /usr/local/bin/chromedriver
-                fi
-                rm -f chromedriver_linux64.zip
-
-                # Fetch the version of the installed Chromium browser
-                LATEST=$(chromium-browser --product-version | cut -d'.' -f1) 
-                echo "Chromium browser version: $LATEST"
-                # FILE=chromedriver_linux64.zip
-                # if [ -f "$FILE" ]; then
-                #   echo "$FILE exists."
-                # else
-                # LATEST=$(chromium-browser --product-version)
-               
-                CHROME_DRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${LATEST})
+                FILE=chromedriver_linux64.zip
+                if [ -f "$FILE" ]; then
+                  echo "$FILE exists."
+                else
+                  LATEST=$(chromium-browser --product-version | cut -d'.' -f1) 
+                  echo "Chromium browser version: $LATEST"
+                  CHROME_DRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${LATEST})
                 echo "Chromedriver version to download: $CHROME_DRIVER_VERSION"
                 wget -N https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip
-
-                # fi
+                fi
                 
                 # install chrome driver
                 unzip chromedriver_linux64.zip
