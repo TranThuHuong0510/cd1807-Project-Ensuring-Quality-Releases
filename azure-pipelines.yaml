@@ -223,31 +223,41 @@ stages:
             inputs:
               versionSpec: "16.x"
           - task: Bash@3
-            displayName: Install required packages for Selenium
+            displayName: Run Selenium Tests
             inputs:
-              targetType: "inline"
+              targetType: 'inline'
               script: |
                 #! /bin/bash
-                sudo apt-get update -y
+                export PATH=$PATH:/usr/lib/chromium-browser/
+
+                sudo add-apt-repository universe -y
+                sudo apt-get upgrade -y
                 sudo apt-get install python3-pip -y
                 sudo apt-get install unzip -y
                 sudo apt-get install -y chromium-browser
                 pip3 install selenium
-                cd ~/
-                DIR=~/app
-                if [ ! -d "$DIR" ]; then
-                    mkdir app
+
+                # download chrome driver v100
+                FILE=chromedriver_linux64.zip
+                if [ -f "$FILE" ]; then
+                  echo "$FILE exists."
+                else
+                  wget https://chromedriver.storage.googleapis.com/105.0.5195.52/chromedriver_linux64.zip
                 fi
-                cd app
-                FILE=~/app/chromedriver_linux64.zip
-                if [ ! -f "$FILE" ]; then
-                    LATEST=$(chromium-browser --product-version) 
-                    wget http://chromedriver.storage.googleapis.com/$LATEST/chromedriver_linux64.zip
-                    unzip -o chromedriver_linux64.zip
-                    sudo ln -s $PWD/chromedriver /usr/local/bin/chromedriver
-                fi
-                export PATH=$PATH:~/app
-                echo "Starting Selenium Tests"
-                python3 test-update-cart.py >> selenium.log
-                echo "Completed Selenium Tests. Check selenium.log for results."
+                
+                # install chrome driver
+                unzip chromedriver_linux64.zip
+                sudo mv chromedriver /usr/bin/chromedriver
+                sudo chown root:root /usr/bin/chromedriver
+                sudo chmod +x /usr/bin/chromedriver
+                chromium-browser -version
+                chromedriver --version
+                
+                sudo mkdir -p /var/log/selenium
+                sudo chmod 777 /var/log/selenium
+                unzip -o $(Build.BuildId)-uitests.zip
+                sudo python3 test-update-cart.py > selenium-out.log
+                cat selenium-out.log
+                sudo cp selenium-out.log /var/log/selenium/selenium-out.log
+                sudo cp selenium-out.log /var/log
               workingDirectory: $(Pipeline.Workspace)/drop-ui-tests
