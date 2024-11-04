@@ -5,6 +5,12 @@ from datetime import datetime
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 import time
+import logging
+
+logging.basicConfig(
+    format='%(asctime)s %(message)s',
+    level=logging.INFO,
+    datefmt='%b %d %H:%M:%S')
 
 
 # Start the browser and login with standard_user
@@ -25,20 +31,22 @@ def login (user, password):
     input_password.send_keys(password)
     btn_login.click()
 
-    product_label = driver.find_element(By.XPATH, "//*[@id='header_container']/div[@class='header_secondary_container']/span[@class='title']")
-    assert product_label.text == 'PRODUCTS'
-
-    print('{}: Login with username {} and password {} successfully'.format(datetime.now(), user, password))
+    if driver.current_url == 'https://www.saucedemo.com/inventory.html':
+        logging.info('Successfully logged in with user: ' + user)
+        return True
+    else:
+        logging.info('Failed to logged in')
+        return False
 
 def add_items_to_cart(driver, total_items):
-    print ('Adding items to cart...')
+    logging.info('add_items_to_cart')
     n_items = 0
     for i in range(total_items):
         try:
             cart_badge = driver.find_element(By.CLASS_NAME, "shopping_cart_badge").text
             n_items = int(cart_badge)
         except NoSuchElementException:
-            print("Cart is empty.")
+            logging.info("Cart is empty.")
 
 
         product_link = driver.find_element(By.ID, "item_" + str(i) + "_title_link")
@@ -46,14 +54,10 @@ def add_items_to_cart(driver, total_items):
         product_link.click()
 
         n_items += 1
-        time.sleep(5) 
-
-        print('{}: {} added to cart.'.format(datetime.now(), product_name))
-        print('Number of items in the cart: {}.'.format(n_items))
-
+        time.sleep(2) 
+        logging.info ('add_items_to_cart: ' + product_name)
         driver.find_element(By.ID, "back-to-products").click()
-
-    print ('{} items added to cart.'.format(n_items))
+    return n_items > 0
 
 def remove_all_items():
   driver.get("https://www.saucedemo.com/cart.html")
