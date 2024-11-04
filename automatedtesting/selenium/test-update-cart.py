@@ -15,13 +15,13 @@ logging.basicConfig(
 
 # Start the browser and login with standard_user
 def login (user, password):
-    print ('Starting the browser...')
+    logging.info('Starting the browser...')
     options = ChromeOptions()
     options.add_argument("--headless") 
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     driver = webdriver.Chrome(options=options)
-    print ('Browser started successfully. Navigating to the demo page to login.')
+    logging.info('Browser started successfully. Navigating to the demo page to login.')
     driver.get('https://www.saucedemo.com/')
     input_username = driver.find_element(By.ID, 'user-name')
     input_password = driver.find_element(By.ID, 'password')
@@ -65,7 +65,7 @@ def remove_all_items():
   for item in items:
     item.find_element(By.CLASS_NAME, "cart_button").click()
   items = driver.find_elements(By.CLASS_NAME, "cart_item")
-  print ('Remove all items completed!')
+  logging.info ('Remove all items completed!')
   return len(items) == 0
 
 if __name__ == "__main__":
