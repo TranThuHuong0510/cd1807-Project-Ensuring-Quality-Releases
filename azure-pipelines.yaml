@@ -250,10 +250,11 @@ stages:
                 CHROME_DRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${LATEST})
                 echo "Chromedriver version to download: $CHROME_DRIVER_VERSION"
 
-                wget -N https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip
+                wget https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip
                 
                 # install chrome driver
-                unzip chromedriver_linux64.zip || exit 1 
+                echo "Installing"
+                unzip chromedriver_linux64.zip || { echo "Unzip failed"; exit 1; }
                 sudo mv chromedriver /usr/bin/chromedriver
                 sudo chmod +x /usr/bin/chromedriver
                 chromium-browser -version
