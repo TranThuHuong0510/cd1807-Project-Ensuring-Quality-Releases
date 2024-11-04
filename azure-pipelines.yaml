@@ -253,13 +253,15 @@ stages:
                 # else
                 # LATEST=$(chromium-browser --product-version)
                 echo "chromium-browser for Chromium version: $LATEST"
-                wget http://chromedriver.storage.googleapis.com/112.0.5615.49/chromedriver_linux64.zip
+                CHROME_DRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_112.0.5615)
+                wget https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip
+
                 # fi
                 
                 # install chrome driver
                 unzip chromedriver_linux64.zip
                 sudo mv chromedriver /usr/bin/chromedriver
-                sudo chown root:root /usr/bin/chromedriver
+                # sudo chown root:root /usr/bin/chromedriver
                 sudo chmod +x /usr/bin/chromedriver
                 chromium-browser -version
                 chromedriver --version
