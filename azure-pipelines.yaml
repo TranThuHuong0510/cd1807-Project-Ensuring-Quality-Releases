@@ -236,24 +236,33 @@ stages:
                 sudo apt-get install -y python3-pip unzip chromium-browser
                 pip3 install selenium
 
-                # download chrome driver v100
-                # Remove any existing chromedriver
+                # Define the Chromedriver file name
                 FILE=chromedriver_linux64.zip
-                if [ -f "$FILE" ]; then
-                  echo "$FILE exists."
-                else
+                CHROMEDRIVER_PATH="/usr/bin/chromedriver"
+
+                # Check if Chromedriver is already installed
+                if [ ! -f "$CHROMEDRIVER_PATH" ]; then
+                   echo "Chromedriver not found. Downloading..."
+
+                  # Get Chromium browser version to match the correct Chromedriver version
                   LATEST=$(chromium-browser --product-version | cut -d'.' -f1) 
                   echo "Chromium browser version: $LATEST"
+
+                  # Fetch the compatible Chromedriver version
                   CHROME_DRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${LATEST})
-                echo "Chromedriver version to download: $CHROME_DRIVER_VERSION"
-                wget -N https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip
+                  echo "Chromedriver version to download: $CHROME_DRIVER_VERSION"
+
+                  # Download Chromedriver if it does not exist
+                  wget -N https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip
+
+                  # Install Chromedriver
+                  unzip -o chromedriver_linux64.zip
+                  sudo mv chromedriver "$CHROMEDRIVER_PATH"
+                  sudo chmod +x "$CHROMEDRIVER_PATH"
+                else
+                  echo "Chromedriver already exists. Skipping download."
                 fi
                 
-                # install chrome driver
-                unzip chromedriver_linux64.zip
-                sudo mv chromedriver /usr/bin/chromedriver
-                # sudo chown root:root /usr/bin/chromedriver
-                sudo chmod +x /usr/bin/chromedriver
                 chromium-browser -version
                 chromedriver --version
                 
