@@ -61,6 +61,7 @@ def add_items_to_cart(driver, total_items):
 
 def remove_all_items(driver):
   items = driver.find_elements(By.CLASS_NAME, "cart_item")
+  logging.info ('total_items_in_cart: ' + len(items))
   for item in items:
     item.find_element(By.CLASS_NAME, "cart_button").click()
   items = driver.find_elements(By.CLASS_NAME, "cart_item")
