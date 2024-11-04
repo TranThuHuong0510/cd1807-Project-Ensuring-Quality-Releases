@@ -231,15 +231,23 @@ stages:
                 sudo apt-get update -y
                 sudo apt-get install python3-pip -y
                 sudo apt-get install unzip -y
-                pip3 install webdriver_manager
-          - bash: |
-              unzip -o $(Build.BuildId)-uitests.zip
-              pip3 install -r requirements.txt
-              google-chrome --version
-              chromedriver --version
-              sudo mv chromedriver /usr/bin/chromedriver
-              sudo chown root:root /usr/bin/chromedriver
-              sudo chmod +x /usr/bin/chromedriver
-              python3 add_remove_from_cart.py | tee -a selenium.log
-            displayName: "Run Selenium"
-            workingDirectory: $(Pipeline.Workspace)/drop-ui-tests
+                sudo apt-get install -y chromium-browser
+                pip3 install selenium
+                cd ~/
+                DIR=~/app
+                if [ ! -d "$DIR" ]; then
+                    mkdir app
+                fi
+                cd app
+                FILE=~/app/chromedriver_linux64.zip
+                if [ ! -f "$FILE" ]; then
+                    LATEST=$(chromium-browser --product-version) 
+                    wget http://chromedriver.storage.googleapis.com/$LATEST/chromedriver_linux64.zip
+                    unzip -o chromedriver_linux64.zip
+                    sudo ln -s $PWD/chromedriver /usr/local/bin/chromedriver
+                fi
+                export PATH=$PATH:~/app
+                echo "Starting Selenium Tests"
+                python3 test-update-cart.py >> selenium.log
+                echo "Completed Selenium Tests. Check selenium.log for results."
+              workingDirectory: $(Pipeline.Workspace)/drop-ui-tests
