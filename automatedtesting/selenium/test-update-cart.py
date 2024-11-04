@@ -43,7 +43,7 @@ def add_items_to_cart(driver, total_items):
     n_items = 0
     for i in range(total_items):
         try:
-            cart_badge = driver.find_element(By.CLASS_NAME, "shopping_cart_badge").text
+            cart_badge = driver.find_element(By.CSS_SELECTOR, "span.shopping_cart_badge").text
             n_items = int(cart_badge)
         except NoSuchElementException:
             logging.info("Cart is empty.")
@@ -61,7 +61,7 @@ def add_items_to_cart(driver, total_items):
 
 def remove_all_items(driver):
   items = driver.find_elements(By.CLASS_NAME, "cart_item")
-  logging.info ('total_items_in_cart: ' + len(items))
+  logging.info('total_items_in_cart: %d', len(items))
   for item in items:
     item.find_element(By.CLASS_NAME, "cart_button").click()
   items = driver.find_elements(By.CLASS_NAME, "cart_item")
