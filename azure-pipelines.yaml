@@ -239,11 +239,11 @@ stages:
 
                 # download chrome driver v100
                 FILE=chromedriver_linux64.zip
-                if [ -f "$FILE" ]; then
-                  echo "$FILE exists."
-                else
-                  LATEST=$(chromium-browser --product-version)
-                  wget http://chromedriver.storage.googleapis.com/$LATEST/chromedriver_linux64.zip
+                # if [ -f "$FILE" ]; then
+                #   echo "$FILE exists."
+                # else
+                LATEST=$(chromium-browser --product-version)
+                wget http://chromedriver.storage.googleapis.com/$LATEST/chromedriver_linux64.zip
                 fi
                 
                 # install chrome driver
