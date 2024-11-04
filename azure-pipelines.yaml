@@ -241,16 +241,22 @@ stages:
                     echo "Removing existing chromedriver..."
                     sudo rm /usr/local/bin/chromedriver
                 fi
-                rm -f chromedriver_linux64.zip
 
-                # Fetch the version of the installed Chromium browser
-                LATEST=$(chromium-browser --product-version | cut -d'.' -f1) 
-                echo "Chromium browser version: $LATEST"
-               
-                CHROME_DRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${LATEST})
-                echo "Chromedriver version to download: $CHROME_DRIVER_VERSION"
+                # Check if the chromedriver zip file already exists
+                if [ -f "chromedriver_linux64.zip" ]; then
+                    echo "Chromedriver archive already exists. Skipping download."
+                else
+                    echo "Chromedriver archive not found. Downloading..."
+                    # Fetch the version of the installed Chromium browser
+                    LATEST=$(chromium-browser --product-version | cut -d'.' -f1)
+                    echo "Chromium browser version: $LATEST"
 
-                wget https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip
+                    CHROME_DRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${LATEST})
+                    echo "Chromedriver version to download: $CHROME_DRIVER_VERSION"
+
+                    # Download chromedriver
+                    wget https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip || { echo "Download failed"; exit 1; }
+                fi
                 
                 # install chrome driver
                 echo "Installing"
