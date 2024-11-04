@@ -44,7 +44,7 @@ def add_items_to_cart(driver, total_items):
     items = driver.find_elements(By.CLASS_NAME, 'inventory_item')[:total_items]
     for item in items:
         product_name = item.find_element(By.CLASS_NAME, "inventory_item_name").text
-        item.find_element(By.CSS_SELECTOR, "button.btn_inventory").click()
+        item.find_element(By.CLASS_NAME, "btn_inventory").click()
 
         n_items += 1
         logging.info ('add_items_to_cart: ' + product_name)
