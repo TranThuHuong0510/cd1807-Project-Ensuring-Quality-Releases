@@ -41,12 +41,14 @@ def login (user, password):
 def add_items_to_cart(driver, total_items):
     logging.info('add_items_to_cart')
     n_items = 0
-    for i in range(total_items):
-        product_name = product_link.find_element(By.CLASS_NAME, "inventory_item_name").text
+    items = driver.find_elements(By.CLASS_NAME, 'inventory_item')[:total_items]
+    for item in items:
+        product_name = item.find_element(By.CLASS_NAME, "inventory_item_name").text
         item.find_element(By.CSS_SELECTOR, "button.btn_inventory").click()
 
         n_items += 1
         logging.info ('add_items_to_cart: ' + product_name)
+    assert n_items == total_items, f"Added {n_items} items."
     return n_items == total_items
 
 def remove_all_items(driver):
