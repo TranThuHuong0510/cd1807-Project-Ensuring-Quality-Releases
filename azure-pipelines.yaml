@@ -266,28 +266,27 @@ stages:
                 chromium-browser -version
                 chromedriver --version
                 
-                LOG_DIR="$(Pipeline.Workspace)/selenium_logs"
+                LOG_DIR="/home/huongttt13/app"
                 mkdir -p "$LOG_DIR"
+                LOG_FILE="$LOG_DIR/selenium.log"
 
-                echo "path: $LOG_DIR"
+                echo "path: $LOG_FILE"
                 unzip -o $(Build.BuildId)-uitests.zip
-                sudo python3 test-update-cart.py > "$LOG_DIR/selenium-out.log" 2>&1
+                sudo python3 test-update-cart.py > "$LOG_FILE" 2>&1
 
                 # Check if the log file has data
-                if [ -s "$LOG_DIR/selenium-out.log" ]; then
+                if [ -s "$LOG_FILE" ]; then
                     echo "Log file has data:"
-                    cat "$LOG_DIR/selenium-out.log"
+                    cat "$LOG_FILE"
                 else
                     echo "Log file is empty."
                 fi
-
-                cp "$LOG_DIR/selenium-out.log" "$(Pipeline.Workspace)/drop-ui-tests/"
               workingDirectory: $(Pipeline.Workspace)/drop-ui-tests
               
           # Publish the Selenium log as an artifact
           - task: PublishBuildArtifacts@1
             displayName: 'Publish Selenium Log'
             inputs:
-              PathtoPublish: '$(Pipeline.Workspace)/selenium_logs/selenium-out.log'
+              PathtoPublish: '/home/huongttt13/app/selenium.log'
               ArtifactName: 'SeleniumLog'
               publishLocation: 'Container'
