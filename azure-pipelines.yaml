@@ -269,6 +269,7 @@ stages:
                 LOG_DIR="$(Pipeline.Workspace)/selenium_logs"
                 mkdir -p "$LOG_DIR"
 
+                echo "path: $LOG_DIR"
                 unzip -o $(Build.BuildId)-uitests.zip
                 sudo python3 test-update-cart.py > "$LOG_DIR/selenium-out.log" 2>&1
 
