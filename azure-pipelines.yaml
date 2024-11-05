@@ -270,7 +270,13 @@ stages:
                 sudo chmod 777 /var/log/selenium
                 unzip -o $(Build.BuildId)-uitests.zip
                 sudo python3 test-update-cart.py | tee /var/log/selenium/selenium-out.log
-                cat selenium-out.log
+                # Check if the log file has data
+                if [ -s /var/log/selenium/selenium-out.log ]; then
+                    echo "Log file has data:"
+                    cat /var/log/selenium/selenium-out.log
+                else
+                    echo "Log file is empty."
+                fi
                 sudo cp /var/log/selenium/selenium-out.log $(Pipeline.Workspace)/drop-ui-tests/
               workingDirectory: $(Pipeline.Workspace)/drop-ui-tests
               
