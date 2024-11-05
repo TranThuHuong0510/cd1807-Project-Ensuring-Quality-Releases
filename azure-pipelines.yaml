@@ -271,8 +271,7 @@ stages:
                 unzip -o $(Build.BuildId)-uitests.zip
                 sudo python3 test-update-cart.py | tee /var/log/selenium/selenium-out.log
                 cat selenium-out.log
-                sudo cp selenium-out.log /var/log/selenium/selenium-out.log
-                sudo cp selenium-out.log /var/log
+                sudo cp /var/log/selenium/selenium-out.log $(Pipeline.Workspace)/drop-ui-tests/
               workingDirectory: $(Pipeline.Workspace)/drop-ui-tests
               
           # Publish the Selenium log as an artifact
