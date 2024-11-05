@@ -274,3 +274,11 @@ stages:
                 sudo cp selenium-out.log /var/log/selenium/selenium-out.log
                 sudo cp selenium-out.log /var/log
               workingDirectory: $(Pipeline.Workspace)/drop-ui-tests
+              
+          # Publish the Selenium log as an artifact
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish Selenium Log'
+            inputs:
+              targetPath: '/var/log/selenium/selenium-out.log'
+              artifact: 'selenium-log'
+              publishLocation: 'pipeline'
