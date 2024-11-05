@@ -269,7 +269,7 @@ stages:
                 sudo mkdir -p /var/log/selenium
                 sudo chmod 777 /var/log/selenium
                 unzip -o $(Build.BuildId)-uitests.zip
-                sudo python3 test-update-cart.py > selenium-out.log
+                sudo python3 test-update-cart.py | tee /var/log/selenium/selenium-out.log
                 cat selenium-out.log
                 sudo cp selenium-out.log /var/log/selenium/selenium-out.log
                 sudo cp selenium-out.log /var/log
