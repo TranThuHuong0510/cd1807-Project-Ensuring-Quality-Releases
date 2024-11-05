@@ -276,9 +276,9 @@ stages:
               workingDirectory: $(Pipeline.Workspace)/drop-ui-tests
               
           # Publish the Selenium log as an artifact
-          - task: PublishPipelineArtifact@1
+          - task: PublishBuildArtifacts@1
             displayName: 'Publish Selenium Log'
             inputs:
-              targetPath: '/var/log/selenium/selenium-out.log'
-              artifact: 'selenium-log'
-              publishLocation: 'pipeline'
+              PathtoPublish: '/var/log/selenium/selenium-out.log'
+              ArtifactName: 'SeleniumLog'
+              publishLocation: 'Container'
